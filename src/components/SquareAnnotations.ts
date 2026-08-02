@@ -62,6 +62,23 @@ export class SquareAnnotations {
     this.element = makeSVGElement("svg", {
       attributes: {
         viewBox: "0 0 80 80",
+        // The board's own table isn't always pixel-perfectly square (its
+        // aspect ratio comes from a CSS padding-percentage trick, not an
+        // explicit size, so it can round to e.g. 512x513 rather than
+        // 512x512). Without this, the default `xMidYMid meet` scaling
+        // preserves the (here, wrongly assumed) 1:1 viewBox aspect ratio by
+        // uniformly scaling to the smaller dimension and letterboxing the
+        // rest — measured up to a ~0.9px cumulative vertical drift from the
+        // board's top row to its bottom row. `none` stretches X and Y
+        // independently to fill the box exactly instead, which eliminates
+        // that drift entirely (verified: 0px vertical error on every square
+        // afterward, vs. up to 0.5px before). It does *not* eliminate a
+        // separate, smaller (~0.375px) horizontal residual that shows up on
+        // some squares either way — that one comes from the table's own
+        // columns not snapping to whole device pixels evenly, which is a
+        // table-layout rounding quirk unrelated to this SVG's scaling and
+        // not fixable from here.
+        preserveAspectRatio: "none",
       },
       classes: ["square-annotations"],
     });

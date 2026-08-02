@@ -48,6 +48,12 @@ export class Arrows {
     this.element = makeSVGElement("svg", {
       attributes: {
         viewBox: "0 0 80 80",
+        // See the detailed comment in SquareAnnotations.ts's constructor —
+        // same viewBox, same wrapper, same fix for the same non-square
+        // container. Not very visible on a thin arrow stroke (unlike the
+        // filled square-annotations this was originally diagnosed from),
+        // but the underlying cause is identical, so fixed here too.
+        preserveAspectRatio: "none",
       },
       classes: ["arrows"],
     });
