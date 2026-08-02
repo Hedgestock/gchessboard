@@ -19,6 +19,10 @@ import {
   isCoordinatesPlacement,
 } from "./components/Coordinates.js";
 import { Arrows, BoardArrow } from "./components/Arrows.js";
+import {
+  SquareAnnotations,
+  SquareAnnotation,
+} from "./components/SquareAnnotations.js";
 
 /**
  * A component that displays a chess board, with optional interactivity. Allows
@@ -100,7 +104,11 @@ import { Arrows, BoardArrow } from "./components/Arrows.js";
  * @cssprop [--move-target-marker-radius=24%] - Radius of marker on a move target
  *   square.
  * @cssprop [--move-target-marker-radius-occupied=82%] - Radius of marker on
- *   a move target square that is occupied (by a piece or custom content).
+ *   a move target square that is occupied (by a piece, or by custom content
+ *   placed in that square's slot — see the `a1`..`h8` slots below. Square
+ *   annotations set via the `squareAnnotations` property do *not* count as
+ *   occupying a square, since they render on a separate layer rather than
+ *   through a square's slot).
  *
  * @cssprop [--outline-blur-radius=3px] - Blur radius of all outlines applied to square.
  * @cssprop [--outline-spread-radius=4px] - Spread radius of all outlines applied to square.
@@ -143,6 +151,10 @@ import { Arrows, BoardArrow } from "./components/Arrows.js";
  *
  * @csspart arrow-<brush_name> - CSS parts for any arrow brushes configured using the
  *   `brush` field on an arrow specification (see the `arrows` property for more details).
+ *
+ * @csspart annotation-<type>-<color_name> - CSS parts for square annotations configured
+ *   via the `squareAnnotations` property, e.g. `annotation-mark-green` or
+ *   `annotation-circle-red`. `type` is one of `corners`, `circle`, or `mark`.
  */
 export class GChessBoardElement extends HTMLElement {
   static get observedAttributes() {
@@ -164,6 +176,7 @@ export class GChessBoardElement extends HTMLElement {
   private _fileCoords: Coordinates;
   private _rankCoords: Coordinates;
   private _arrows: Arrows;
+  private _squareAnnotations: SquareAnnotations;
   private _customPieceTypes?: CustomPieceTypeMap;
   private _pendingFen?: string;
 
@@ -198,6 +211,11 @@ export class GChessBoardElement extends HTMLElement {
       this._shadow
     );
     this._boardArrowsWrapper.appendChild(this._board.element);
+
+    this._squareAnnotations = new SquareAnnotations(
+      GChessBoardElement._DEFAULT_SIDE
+    );
+    this._boardArrowsWrapper.appendChild(this._squareAnnotations.element);
 
     this._fileCoords = new Coordinates({
       direction: "file",
@@ -243,6 +261,7 @@ export class GChessBoardElement extends HTMLElement {
         this._fileCoords.orientation = this.orientation;
         this._rankCoords.orientation = this.orientation;
         this._arrows.orientation = this.orientation;
+        this._squareAnnotations.orientation = this.orientation;
         break;
       case "turn":
         this._board.turn = this.turn;
@@ -476,6 +495,36 @@ export class GChessBoardElement extends HTMLElement {
 
   set arrows(arrows: BoardArrow[] | undefined) {
     this._arrows.arrows = arrows;
+  }
+
+  /**
+   * Set of square-level annotations to draw on the board — corner-bracket
+   * highlights, ring outlines, or full-square tints, for each an object with
+   * `square`, `type` (`"corners"`, `"circle"`, or `"mark"`), and an optional
+   * `color` (works the same way `arrows`' `brush` does: it becomes part of a
+   * CSS part name, `annotation-<type>-<color>`, e.g. `annotation-mark-green`).
+   *
+   * Unlike placing custom content in a square's `a1`..`h8` slot, annotations
+   * render on their own layer and never affect `hasContent` — so a square
+   * carrying an annotation still gets the plain (non-"occupied") move-target
+   * marker style if it's actually empty.
+   *
+   * Example:
+   *
+   * ```js
+   * board.squareAnnotations = [
+   *   { square: "e4", type: "mark", color: "green" },
+   *   { square: "d5", type: "circle", color: "red" },
+   *   { square: "c6", type: "corners" },
+   * ];
+   * ```
+   */
+  get squareAnnotations() {
+    return this._squareAnnotations.annotations;
+  }
+
+  set squareAnnotations(annotations: SquareAnnotation[] | undefined) {
+    this._squareAnnotations.annotations = annotations;
   }
 
   /**

@@ -14,6 +14,10 @@ import {
   Square,
 } from "./utils/chess.js";
 import { BoardArrow } from "./components/Arrows.js";
+import {
+  SquareAnnotation,
+  SquareAnnotationType,
+} from "./components/SquareAnnotations.js";
 import { CoordinatesPlacement } from "./components/Coordinates.js";
 
 export { GChessBoardElement };
@@ -30,6 +34,8 @@ export type {
   Position,
   Side,
   Square,
+  SquareAnnotation,
+  SquareAnnotationType,
 };
 
 customElements.define("g-chess-board", GChessBoardElement);
