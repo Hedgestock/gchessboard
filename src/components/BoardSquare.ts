@@ -34,6 +34,7 @@ export class BoardSquare {
   private _piecePartIdentifier?: string;
   private _secondaryBoardPiece?: BoardPiece;
   private _hasContent?: boolean;
+  private _inCheck = false;
   private _hover = false;
   private _markedTarget = false;
   private _moveState?: BoardSquareMoveState;
@@ -120,6 +121,21 @@ export class BoardSquare {
   set hasContent(value: boolean) {
     this._hasContent = value;
     this._contentElement.classList.toggle("has-content", value);
+  }
+
+  /**
+   * Whether this square holds a king currently in check. Purely a visual
+   * flag — unlike `moveable`/`moveTarget`, it carries no interaction
+   * semantics, so it applies regardless of whether the board is
+   * `interactive` and doesn't participate in any board state machine.
+   */
+  get inCheck(): boolean {
+    return this._inCheck;
+  }
+
+  set inCheck(value: boolean) {
+    this._inCheck = value;
+    this._contentElement.classList.toggle("in-check", value);
   }
 
   /**

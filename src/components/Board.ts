@@ -27,6 +27,7 @@ export class Board {
   private _turn?: Side;
   private _interactive: boolean;
   private _position: Position;
+  private _checkSquares: Set<Square> = new Set();
   private _customPieceTypes?: CustomPieceTypeMap;
   private _boardState: BoardState;
   private _tabbableSquare?: Square;
@@ -158,6 +159,11 @@ export class Board {
     this._orientation = value;
     this._refreshDefaultTabbableSquare();
     this._renderPosition();
+    // `_checkSquares` holds square labels, not grid indices — the same
+    // `BoardSquare` instance (fixed grid index) represents a different
+    // square after a flip, so its `inCheck` flag has to be recomputed here,
+    // same reasoning as `turn`'s moveable recompute below.
+    this._applyCheckHighlight();
     // Switch focused square, if any, on orientation change
     if (this._focusedSquare) {
       this._focusTabbableSquare();
@@ -199,6 +205,20 @@ export class Board {
       const piece = this._position[square];
       this._boardSquares[idx].moveable = !piece || this._pieceMoveable(piece);
     }
+  }
+
+  get checkSquares(): Square[] {
+    return [...this._checkSquares];
+  }
+
+  /**
+   * Squares to highlight as currently holding a king in check. Purely
+   * declarative board state, same shape as `turn`/`position` — no
+   * interaction semantics attached, unlike `moveable`/`moveTarget`.
+   */
+  set checkSquares(value: Square[]) {
+    this._checkSquares = new Set(value);
+    this._applyCheckHighlight();
   }
 
   /**
@@ -480,6 +500,13 @@ export class Board {
 
   private _pieceMoveable(piece: Piece): boolean {
     return !this.turn || piece.color === this.turn;
+  }
+
+  private _applyCheckHighlight() {
+    for (let idx = 0; idx < 64; idx++) {
+      const square = getSquare(idx, this.orientation);
+      this._boardSquares[idx].inCheck = this._checkSquares.has(square);
+    }
   }
 
   private _renderPosition() {
