@@ -42,21 +42,75 @@ export class SquareAnnotations {
    */
   private static _DEFAULT_COLOR = "red";
 
-  private static _CORNER_STROKE_WIDTH = 0.85;
-  private static _CIRCLE_STROKE_WIDTH = 0.85;
-  private static _CIRCLE_RADIUS = 3.3;
+  private static _SQUARE_SIZE = 10;
 
   /**
-   * One L-shaped bracket per corner, in a local 0-10 (one square) coordinate
-   * space — translated into place per-square via a `<g transform="translate(...)">`
-   * wrapper in `_makeAnnotation`.
+   * Target gap between an annotation's *painted* (stroke-inclusive) outer
+   * edge and the square's true edge, in this local per-square coordinate
+   * space — shared by both `corners` and `circle` so they read as the same
+   * inset as each other. Chosen to land on about 2 real screen pixels at
+   * this app's typical board size (`#board { width: min(90vw, 32rem) }` →
+   * 512px ÷ 8 squares = 64px/square, and this coordinate space is 10
+   * units/square, so 1 unit ≈ 6.4px: `2 / 6.4 = 0.3125`). Purely
+   * proportional, same as everything else in this layer (and gchessboard's
+   * own `--move-target-marker-radius` etc.) — it'll read as more or less
+   * than a literal 2px at other board sizes, not a fixed screen distance.
    */
-  private static _CORNER_PATHS: Record<"tl" | "tr" | "bl" | "br", string> = {
-    tl: "M 0.5 3.7 L 0.5 1.5 Q 0.5 0.5 1.5 0.5 L 3.7 0.5",
-    tr: "M 9.5 3.7 L 9.5 1.5 Q 9.5 0.5 8.5 0.5 L 6.3 0.5",
-    bl: "M 0.5 6.3 L 0.5 8.5 Q 0.5 9.5 1.5 9.5 L 3.7 9.5",
-    br: "M 9.5 6.3 L 9.5 8.5 Q 9.5 9.5 8.5 9.5 L 6.3 9.5",
-  };
+  private static _OUTER_INSET = 2 / 6.4;
+
+  private static _CORNER_STROKE_WIDTH = 0.85;
+  private static _CIRCLE_STROKE_WIDTH = 0.85;
+
+  /**
+   * How far the corner brackets' straight arms reach, and the radius of
+   * the quadratic curve rounding the true corner point — fixed proportions
+   * of the bracket's own shape, independent of `_OUTER_INSET` (which only
+   * moves the whole bracket closer to/further from the edge).
+   */
+  private static _CORNER_CURVE_RADIUS = 1;
+  private static _CORNER_ARM_LENGTH = 2.2;
+
+  /**
+   * A stroked path's paint bleeds outward from its centerline by half the
+   * stroke width, so the path itself has to sit that much *further* in
+   * than `_OUTER_INSET` for its painted edge to land exactly there.
+   */
+  private static _CORNER_PATH_INSET =
+    SquareAnnotations._OUTER_INSET + SquareAnnotations._CORNER_STROKE_WIDTH / 2;
+
+  /**
+   * Same reasoning as the corners' path inset, but for a circle the stroke
+   * bleeds outward from the radius rather than a path centerline, so the
+   * radius has to be *smaller* than `_SQUARE_SIZE / 2 - _OUTER_INSET` by
+   * half the stroke width for its outer edge to land on `_OUTER_INSET`.
+   */
+  private static _CIRCLE_RADIUS =
+    SquareAnnotations._SQUARE_SIZE / 2 -
+    SquareAnnotations._OUTER_INSET -
+    SquareAnnotations._CIRCLE_STROKE_WIDTH / 2;
+
+  /**
+   * One L-shaped bracket per corner, in this local 0-10 (one square)
+   * coordinate space — translated into place per-square via a
+   * `<g transform="translate(...)">` wrapper in `_makeAnnotation`. Computed
+   * (rather than hardcoded) so `_OUTER_INSET` alone controls how far every
+   * corner sits from the edge, without hand-recomputing four path strings
+   * whenever that changes.
+   */
+  private static _cornerPath(corner: "tl" | "tr" | "bl" | "br"): string {
+    const inset = SquareAnnotations._CORNER_PATH_INSET;
+    const curve = SquareAnnotations._CORNER_CURVE_RADIUS;
+    const arm = SquareAnnotations._CORNER_ARM_LENGTH;
+    const xDir = corner === "tl" || corner === "bl" ? 1 : -1;
+    const yDir = corner === "tl" || corner === "tr" ? 1 : -1;
+    const cornerX = xDir === 1 ? inset : SquareAnnotations._SQUARE_SIZE - inset;
+    const cornerY = yDir === 1 ? inset : SquareAnnotations._SQUARE_SIZE - inset;
+    const curveEndX = cornerX + xDir * curve;
+    const curveEndY = cornerY + yDir * curve;
+    const armX = cornerX + xDir * (curve + arm);
+    const armY = cornerY + yDir * (curve + arm);
+    return `M ${cornerX} ${armY} L ${cornerX} ${curveEndY} Q ${cornerX} ${cornerY} ${curveEndX} ${cornerY} L ${armX} ${cornerY}`;
+  }
 
   constructor(orientation: Side) {
     this.element = makeSVGElement("svg", {
@@ -170,8 +224,8 @@ export class SquareAnnotations {
       case "circle":
         return makeSVGElement("circle", {
           attributes: {
-            cx: `${x + 5}`,
-            cy: `${y + 5}`,
+            cx: `${x + SquareAnnotations._SQUARE_SIZE / 2}`,
+            cy: `${y + SquareAnnotations._SQUARE_SIZE / 2}`,
             r: `${SquareAnnotations._CIRCLE_RADIUS}`,
             fill: "none",
             stroke: "currentColor",
@@ -184,7 +238,8 @@ export class SquareAnnotations {
         const group = makeSVGElement("g", {
           attributes: { transform: `translate(${x}, ${y})` },
         });
-        Object.values(SquareAnnotations._CORNER_PATHS).forEach((d) => {
+        (["tl", "tr", "bl", "br"] as const).forEach((corner) => {
+          const d = SquareAnnotations._cornerPath(corner);
           group.appendChild(
             makeSVGElement("path", {
               attributes: {
