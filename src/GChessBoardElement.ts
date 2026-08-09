@@ -131,10 +131,14 @@ import {
  *   make them easier to see.
  * @cssprop [--piece-padding=3%] - Padding applied to square when piece is placed in it.
  *
- * @cssprop [--arrow-color-primary=hsl(40deg 100% 50% / 80%)] - Color applied to arrow
- *   with brush `primary`.
- * @cssprop [--arrow-color-secondary=hsl(7deg 93% 61% / 80%)] - Color applied to arrow
- *   with brush `secondary`.
+ * @cssprop [--annotation-color-red=hsl(0deg 70% 55% / 85%)] - Color applied to arrows
+ *   and square annotations using the `red` brush/color name.
+ * @cssprop [--annotation-color-green=hsl(130deg 60% 40% / 85%)] - Color applied to arrows
+ *   and square annotations using the `green` brush/color name.
+ * @cssprop [--annotation-color-blue=hsl(210deg 80% 55% / 85%)] - Color applied to arrows
+ *   and square annotations using the `blue` brush/color name.
+ * @cssprop [--annotation-color-yellow=hsl(50deg 90% 50% / 85%)] - Color applied to arrows
+ *   and square annotations using the `yellow` brush/color name.
  *
  * @slot a1,a2,...,h8 - Slots that allow placement of custom content -- SVGs, text, or
  * any other annotation -- on the corresponding square.
@@ -471,9 +475,13 @@ export class GChessBoardElement extends HTMLElement {
    * should be usable as a valid CSS identifier.
    *
    * In addition to allowing arbitrary part names, arrows support a few
-   * out-of-the-box brush names, `primary` and `secondary`, which colors
-   * defined with CSS custom properties `--arrow-color-primary` and
-   * `--arrow-color-secondary`.
+   * out-of-the-box brush names, `red`, `green`, `blue`, and `yellow`, whose
+   * colors are defined with the CSS custom properties `--annotation-color-red`,
+   * `--annotation-color-green`, `--annotation-color-blue`, and
+   * `--annotation-color-yellow` — the same properties used to color square
+   * annotations of the same color name (see the `squareAnnotations`
+   * property), so an arrow and a square mark sharing a color name always
+   * match.
    *
    * Example:
    *

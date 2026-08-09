@@ -37,7 +37,7 @@ export class Arrows {
   /**
    * Default brush name when none is specified for an arrow.
    */
-  private static _DEFAULT_BRUSH_NAME = "primary";
+  private static _DEFAULT_BRUSH_NAME = "red";
 
   /**
    * Default arrow weight when none is specified.

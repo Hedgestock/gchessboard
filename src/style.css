@@ -61,12 +61,11 @@
   /* Padding applied around piece. */
   --piece-padding: 3%;
 
-  /* Arrow colors. */
-  --arrow-color-primary: hsl(40deg 100% 50% / 80%);
-  --arrow-color-secondary: hsl(7deg 93% 61% / 80%);
-
-  /* Square annotation colors (corners/circle — see the `squareAnnotations`
-     property), keyed by the `color` name used in each annotation. */
+  /* Shared red/green/blue/yellow palette, keyed by the `color`/`brush` name
+     used by both arrows (see the `arrows` property's built-in brush names)
+     and square annotations (corners/circle — see the `squareAnnotations`
+     property). One palette for both, so an arrow and a square mark using
+     the same color name always match. */
   --annotation-color-red: hsl(0deg 70% 55% / 85%);
   --annotation-color-green: hsl(130deg 60% 40% / 85%);
   --annotation-color-blue: hsl(210deg 80% 55% / 85%);
@@ -414,12 +413,20 @@ table.dragging {
   touch-action: none;
 }
 
-.arrow-primary {
-  color: var(--arrow-color-primary);
+.arrow-red {
+  color: var(--annotation-color-red);
 }
 
-.arrow-secondary {
-  color: var(--arrow-color-secondary);
+.arrow-green {
+  color: var(--annotation-color-green);
+}
+
+.arrow-blue {
+  color: var(--annotation-color-blue);
+}
+
+.arrow-yellow {
+  color: var(--annotation-color-yellow);
 }
 
 /*********************
