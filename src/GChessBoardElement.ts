@@ -156,8 +156,8 @@ import {
  *   `brush` field on an arrow specification (see the `arrows` property for more details).
  *
  * @csspart annotation-<type>-<color_name> - CSS parts for square annotations configured
- *   via the `squareAnnotations` property, e.g. `annotation-mark-green` or
- *   `annotation-circle-red`. `type` is one of `corners`, `circle`, or `mark`.
+ *   via the `squareAnnotations` property, e.g. `annotation-corners-green` or
+ *   `annotation-circle-red`. `type` is one of `corners` or `circle`.
  */
 export class GChessBoardElement extends HTMLElement {
   static get observedAttributes() {
@@ -502,10 +502,10 @@ export class GChessBoardElement extends HTMLElement {
 
   /**
    * Set of square-level annotations to draw on the board — corner-bracket
-   * highlights, ring outlines, or full-square tints, for each an object with
-   * `square`, `type` (`"corners"`, `"circle"`, or `"mark"`), and an optional
-   * `color` (works the same way `arrows`' `brush` does: it becomes part of a
-   * CSS part name, `annotation-<type>-<color>`, e.g. `annotation-mark-green`).
+   * highlights or ring outlines, for each an object with `square`, `type`
+   * (`"corners"` or `"circle"`), and an optional `color` (works the same way
+   * `arrows`' `brush` does: it becomes part of a CSS part name,
+   * `annotation-<type>-<color>`, e.g. `annotation-circle-green`).
    *
    * Unlike placing custom content in a square's `a1`..`h8` slot, annotations
    * render on their own layer and never affect `hasContent` — so a square
@@ -516,7 +516,6 @@ export class GChessBoardElement extends HTMLElement {
    *
    * ```js
    * board.squareAnnotations = [
-   *   { square: "e4", type: "mark", color: "green" },
    *   { square: "d5", type: "circle", color: "red" },
    *   { square: "c6", type: "corners" },
    * ];

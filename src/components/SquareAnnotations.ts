@@ -2,11 +2,11 @@ import { getVisualRowColumn, Side, Square } from "../utils/chess.js";
 import { makeSVGElement } from "../utils/dom.js";
 import { assertUnreachable } from "../utils/typing.js";
 
-export type SquareAnnotationType = "corners" | "circle" | "mark";
+export type SquareAnnotationType = "corners" | "circle";
 
 /**
- * A single square-level annotation: a corner-bracket highlight, a ring
- * outline, or a full-square tint.
+ * A single square-level annotation: a corner-bracket highlight or a ring
+ * outline.
  *
  * Unlike custom content placed via the `a1`..`h8` slots, annotations render
  * on their own dedicated SVG layer (see `SquareAnnotations`, alongside
@@ -25,7 +25,7 @@ export type SquareAnnotation = {
   /**
    * Identifies a CSS part to style this annotation with, similar to `brush`
    * on `BoardArrow`: a `color` of `"foo"` applies the CSS part
-   * `annotation-<type>-foo`, e.g. `annotation-mark-foo`. Defaults to `"red"`.
+   * `annotation-<type>-foo`, e.g. `annotation-circle-foo`. Defaults to `"red"`.
    */
   color?: string;
 };
@@ -209,18 +209,6 @@ export class SquareAnnotations {
     );
 
     switch (annotation.type) {
-      case "mark":
-        return makeSVGElement("rect", {
-          attributes: {
-            x: `${x}`,
-            y: `${y}`,
-            width: "10",
-            height: "10",
-            fill: "currentColor",
-            part: partName,
-          },
-          classes: [partName],
-        });
       case "circle":
         return makeSVGElement("circle", {
           attributes: {

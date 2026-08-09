@@ -65,7 +65,7 @@
   --arrow-color-primary: hsl(40deg 100% 50% / 80%);
   --arrow-color-secondary: hsl(7deg 93% 61% / 80%);
 
-  /* Square annotation colors (corners/circle/mark — see the `squareAnnotations`
+  /* Square annotation colors (corners/circle — see the `squareAnnotations`
      property), keyed by the `color` name used in each annotation. */
   --annotation-color-red: hsl(0deg 70% 55% / 85%);
   --annotation-color-green: hsl(130deg 60% 40% / 85%);
@@ -431,7 +431,7 @@ table.dragging {
 
   /* Above the plain square background, but below pieces (z-index: 10) and
      the piece being dragged/moved — an annotation should never obscure the
-     piece sitting on that square, only tint/outline/bracket around it. Also
+     piece sitting on that square, only outline/bracket around it. Also
      below arrows (z-index: 20), which need to stay visible over pieces. */
   z-index: 5;
   width: 100%;
@@ -444,25 +444,21 @@ table.dragging {
 }
 
 .annotation-corners-red,
-.annotation-circle-red,
-.annotation-mark-red {
+.annotation-circle-red {
   color: var(--annotation-color-red);
 }
 
 .annotation-corners-green,
-.annotation-circle-green,
-.annotation-mark-green {
+.annotation-circle-green {
   color: var(--annotation-color-green);
 }
 
 .annotation-corners-blue,
-.annotation-circle-blue,
-.annotation-mark-blue {
+.annotation-circle-blue {
   color: var(--annotation-color-blue);
 }
 
 .annotation-corners-yellow,
-.annotation-circle-yellow,
-.annotation-mark-yellow {
+.annotation-circle-yellow {
   color: var(--annotation-color-yellow);
 }
