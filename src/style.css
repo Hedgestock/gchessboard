@@ -162,14 +162,11 @@
   --p-square-color: var(--check-color);
 }
 
-/* Persistent (non-hover) tint for squares set via the `highlightMoveable`
-   property (see GChessBoardElement.ts/Board.ts) — an explicit, caller-chosen
-   square list, not every square gchessboard itself considers `.moveable`
-   (see that property's own doc comment for why). Explicitly excludes every
-   state that should still take priority instead of relying on selector
-   specificity to sort it out, since those states (hover in particular) are
-   declared both before and after this rule. */
-[data-square].highlight-moveable:not(.move-start, .in-check, .hover, :hover) {
+/* Tint for squares set via the `highlightMoveable` property (see
+   GChessBoardElement.ts/Board.ts) — an explicit, caller-chosen square list,
+   not every square gchessboard itself considers `.moveable` (see that
+   property's own doc comment for why). */
+[data-square].highlight-moveable:not(.move-start, .in-check, .hover) {
   --p-square-color: var(--p-square-color-moveable);
 }
 
