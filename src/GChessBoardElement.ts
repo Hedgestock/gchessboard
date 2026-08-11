@@ -113,8 +113,10 @@ import {
  * @cssprop [--outline-blur-radius=3px] - Blur radius of all outlines applied to square.
  * @cssprop [--outline-spread-radius=4px] - Spread radius of all outlines applied to square.
  *
- * @cssprop [--check-color=hsl(0deg 90% 45% / 90%)] - Color applied to a square set via
- *   the `checkSquares` property (a king currently in check).
+ * @cssprop [--square-color-dark-check=hsl(0deg 90% 42% / 90%)] - Color applied to a dark
+ *   square set via the `checkSquares` property (a king currently in check).
+ * @cssprop [--square-color-light-check=hsl(0deg 90% 58% / 90%)] - Color applied to a light
+ *   square set via the `checkSquares` property (a king currently in check).
  *
  * @cssprop [--square-color-dark-moveable=hsl(205deg 70% 38%)] - Color applied to a dark
  *   square set via the `highlightMoveable` property.
@@ -544,7 +546,8 @@ export class GChessBoardElement extends HTMLElement {
 
   /**
    * Squares holding a king currently in check, highlighted via
-   * `--check-color`. Unlike `squareAnnotations`, this isn't a decorative
+   * `--square-color-dark-check`/`--square-color-light-check`. Unlike
+   * `squareAnnotations`, this isn't a decorative
    * overlay layer — it's declarative board state, the same kind of thing
    * `turn`/`position` are, styled directly on the square itself (same
    * mechanism as the built-in "active move" highlight) rather than drawn on

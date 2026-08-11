@@ -15,8 +15,11 @@
   --outline-color-dark-active: hsl(138deg 85% 53% / 95%);
   --outline-color-light-active: hsl(66deg 97% 72% / 95%);
 
-  /* Color applied to a square set via the `checkSquares` property. */
-  --check-color: hsl(0deg 90% 45% / 90%);
+  /* Color applied to a square set via the `checkSquares` property, split by
+     square color the same way --square-color-dark/light-moveable is, so the
+     alarm color still reads against either base tone. */
+  --square-color-dark-check: hsl(0deg 90% 42% / 90%);
+  --square-color-light-check: hsl(0deg 90% 58% / 90%);
 
   /* Square colors applied to squares holding a currently movable piece, at
      rest (not just on hover), when the `highlightMoveable` property is on. */
@@ -159,7 +162,7 @@
 [data-square].in-check {
   /* Placed after .move-start so it takes priority if a king in check is
      also the square currently being moved. */
-  --p-square-color: var(--check-color);
+  --p-square-color: var(--p-square-color-check);
 }
 
 /* Persistent (non-hover) tint for squares set via the `highlightMoveable`
@@ -304,6 +307,7 @@ table.dragging {
   --p-square-color-active: var(--square-color-dark-active);
   --p-outline-color-active: var(--outline-color-dark-active);
   --p-square-color-moveable: var(--square-color-dark-moveable);
+  --p-square-color-check: var(--square-color-dark-check);
 }
 
 [data-square-color="light"] {
@@ -314,6 +318,7 @@ table.dragging {
   --p-square-color-active: var(--square-color-light-active);
   --p-outline-color-active: var(--outline-color-light-active);
   --p-square-color-moveable: var(--square-color-light-moveable);
+  --p-square-color-check: var(--square-color-light-check);
 }
 
 /****************
