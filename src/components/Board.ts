@@ -28,6 +28,7 @@ export class Board {
   private _interactive: boolean;
   private _position: Position;
   private _checkSquares: Set<Square> = new Set();
+  private _highlightMoveableSquares: Set<Square> = new Set();
   private _customPieceTypes?: CustomPieceTypeMap;
   private _boardState: BoardState;
   private _tabbableSquare?: Square;
@@ -159,11 +160,12 @@ export class Board {
     this._orientation = value;
     this._refreshDefaultTabbableSquare();
     this._renderPosition();
-    // `_checkSquares` holds square labels, not grid indices — the same
-    // `BoardSquare` instance (fixed grid index) represents a different
-    // square after a flip, so its `inCheck` flag has to be recomputed here,
-    // same reasoning as `turn`'s moveable recompute below.
+    // `_checkSquares`/`_highlightMoveableSquares` hold square labels, not
+    // grid indices — the same `BoardSquare` instance (fixed grid index)
+    // represents a different square after a flip, so these flags have to be
+    // recomputed here, same reasoning as `turn`'s moveable recompute below.
     this._applyCheckHighlight();
+    this._applyMoveableHighlight();
     // Switch focused square, if any, on orientation change
     if (this._focusedSquare) {
       this._focusTabbableSquare();
@@ -219,6 +221,25 @@ export class Board {
   set checkSquares(value: Square[]) {
     this._checkSquares = new Set(value);
     this._applyCheckHighlight();
+  }
+
+  get highlightMoveable(): Square[] {
+    return [...this._highlightMoveableSquares];
+  }
+
+  /**
+   * Squares to give a persistent (non-hover) "movable piece" tint.
+   * Declarative board state, same shape as `checkSquares` — an explicit
+   * square list, not "every square gchessboard itself considers moveable".
+   * `moveable`/`interactive` above only ever mean "this square's piece
+   * belongs to the side allowed to move" (cursor/interaction purposes);
+   * whether a piece actually has a legal destination is something only the
+   * caller's own rules engine knows, since gchessboard never computes
+   * legality itself (see `movestart`'s `setTargets` in the public API).
+   */
+  set highlightMoveable(value: Square[]) {
+    this._highlightMoveableSquares = new Set(value);
+    this._applyMoveableHighlight();
   }
 
   /**
@@ -506,6 +527,14 @@ export class Board {
     for (let idx = 0; idx < 64; idx++) {
       const square = getSquare(idx, this.orientation);
       this._boardSquares[idx].inCheck = this._checkSquares.has(square);
+    }
+  }
+
+  private _applyMoveableHighlight() {
+    for (let idx = 0; idx < 64; idx++) {
+      const square = getSquare(idx, this.orientation);
+      this._boardSquares[idx].highlightMoveable =
+        this._highlightMoveableSquares.has(square);
     }
   }
 

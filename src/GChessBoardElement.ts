@@ -116,6 +116,11 @@ import {
  * @cssprop [--check-color=hsl(0deg 90% 45% / 90%)] - Color applied to a square set via
  *   the `checkSquares` property (a king currently in check).
  *
+ * @cssprop [--square-color-dark-moveable=hsl(205deg 70% 38%)] - Color applied to a dark
+ *   square set via the `highlightMoveable` property.
+ * @cssprop [--square-color-light-moveable=hsl(205deg 70% 78%)] - Color applied to a light
+ *   square set via the `highlightMoveable` property.
+ *
  * @cssprop [--coords-font-size=0.7rem] - Font size of coord labels shown on board.
  * @cssprop [--coords-font-family=sans-serif] - Font family of coord labels shown on board.
  * @cssprop [--coords-inside-coord-padding-left=0.5%] - Left padding applied to coordinates
@@ -557,6 +562,32 @@ export class GChessBoardElement extends HTMLElement {
 
   set checkSquares(squares: Square[]) {
     this._board.checkSquares = squares;
+  }
+
+  /**
+   * Squares holding a currently movable piece to give a persistent
+   * (non-hover) tint, via `--square-color-dark-moveable`/
+   * `--square-color-light-moveable`. Declarative board state, same shape as
+   * `checkSquares` — but unlike `checkSquares`, gchessboard has no way to
+   * compute this itself: pass in whichever squares your own rules engine
+   * says actually have a legal move, not just "belongs to the side to
+   * move" (that's what `interactive`/the built-in `moveable` state already
+   * govern, for cursor/interaction purposes only — a pinned or fully
+   * blocked piece is still `moveable` in that sense). Empty (the default)
+   * if nothing should be highlighted.
+   *
+   * Example:
+   *
+   * ```js
+   * board.highlightMoveable = ["e2", "g1"];
+   * ```
+   */
+  get highlightMoveable() {
+    return this._board.highlightMoveable;
+  }
+
+  set highlightMoveable(squares: Square[]) {
+    this._board.highlightMoveable = squares;
   }
 
   /**

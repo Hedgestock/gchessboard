@@ -18,6 +18,11 @@
   /* Color applied to a square set via the `checkSquares` property. */
   --check-color: hsl(0deg 90% 45% / 90%);
 
+  /* Square colors applied to squares holding a currently movable piece, at
+     rest (not just on hover), when the `highlightMoveable` property is on. */
+  --square-color-dark-moveable: hsl(205deg 70% 38%);
+  --square-color-light-moveable: hsl(205deg 70% 78%);
+
   /* Color of outline when square has focus. */
   --outline-color-focus: hsl(30deg 94% 55% / 90%);
 
@@ -157,6 +162,17 @@
   --p-square-color: var(--check-color);
 }
 
+/* Persistent (non-hover) tint for squares set via the `highlightMoveable`
+   property (see GChessBoardElement.ts/Board.ts) — an explicit, caller-chosen
+   square list, not every square gchessboard itself considers `.moveable`
+   (see that property's own doc comment for why). Explicitly excludes every
+   state that should still take priority instead of relying on selector
+   specificity to sort it out, since those states (hover in particular) are
+   declared both before and after this rule. */
+[data-square].highlight-moveable:not(.move-start, .in-check, .hover, :hover) {
+  --p-square-color: var(--p-square-color-moveable);
+}
+
 @media (hover: hover) {
   /* Hover styles only shown on devices with mouse pointers.
      Prevent iOS Safari from persisting a hover style. */
@@ -287,6 +303,7 @@ table.dragging {
   --p-move-target-marker-color: var(--move-target-marker-color-dark-square);
   --p-square-color-active: var(--square-color-dark-active);
   --p-outline-color-active: var(--outline-color-dark-active);
+  --p-square-color-moveable: var(--square-color-dark-moveable);
 }
 
 [data-square-color="light"] {
@@ -296,6 +313,7 @@ table.dragging {
   --p-move-target-marker-color: var(--move-target-marker-color-light-square);
   --p-square-color-active: var(--square-color-light-active);
   --p-outline-color-active: var(--outline-color-light-active);
+  --p-square-color-moveable: var(--square-color-light-moveable);
 }
 
 /****************

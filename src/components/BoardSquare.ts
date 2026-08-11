@@ -35,6 +35,7 @@ export class BoardSquare {
   private _secondaryBoardPiece?: BoardPiece;
   private _hasContent?: boolean;
   private _inCheck = false;
+  private _highlightMoveable = false;
   private _hover = false;
   private _markedTarget = false;
   private _moveState?: BoardSquareMoveState;
@@ -136,6 +137,24 @@ export class BoardSquare {
   set inCheck(value: boolean) {
     this._inCheck = value;
     this._contentElement.classList.toggle("in-check", value);
+  }
+
+  /**
+   * Whether this square should get a persistent (non-hover) "movable piece"
+   * tint. Purely a visual flag, same as `inCheck` — deliberately separate
+   * from `moveable` below, which only means "this square's piece belongs to
+   * the side allowed to move" (used for cursor/interaction purposes), not
+   * "this piece actually has a legal destination". Only the caller knows
+   * that, via their own rules engine (see `GChessBoardElement.ts`'s
+   * `highlightMoveable` property docs).
+   */
+  get highlightMoveable(): boolean {
+    return this._highlightMoveable;
+  }
+
+  set highlightMoveable(value: boolean) {
+    this._highlightMoveable = value;
+    this._contentElement.classList.toggle("highlight-moveable", value);
   }
 
   /**
